@@ -2,6 +2,7 @@
 using Placehold.Resources;
 using System;
 using System.ComponentModel;
+using System.Configuration;
 using System.Windows;
 using System.Windows.Forms;
 

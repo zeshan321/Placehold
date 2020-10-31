@@ -2,6 +2,7 @@
 using Placehold.Keyboard.Key;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Threading;
 
@@ -11,17 +12,20 @@ namespace Placehold.Keyboard
     {
         private readonly KeyboardHook keyboardHook;
 
-        private const char symbol = '$'; // only start listening once this symbol is typed and stop once typed again
+        private readonly char symbol; // only start listening once this symbol is typed and stop once typed again
+        private readonly TimeSpan timeout; // Cancel listening if final symbol key wasn't pressed within given timespan
         private DateTimeOffset? capture; // when not null, typed values will be stored in captured array
-        private TimeSpan timeout = new TimeSpan(0, 0, 30); // Cancel listening if final symbol key wasn't pressed within given timespan
         private List<string> capturedKeys = new List<string>();
         private const string input = "$nabz$";
         private char[] output = "yesterday on wallstreetbets one guy put 450K into SPY and another put in 800K into spy there about to be millionaires today while we sit here and code myadmin".ToCharArray();
 
         public KeyboardManager()
         {
+            this.symbol = char.Parse(ConfigurationManager.AppSettings["symbol"]);
+            this.timeout = TimeSpan.Parse(ConfigurationManager.AppSettings["timeout"]);
+
             this.keyboardHook = new KeyboardHook();
-            keyboardHook.KeyboardPressed += OnKeyPressed;
+            this.keyboardHook.KeyboardPressed += OnKeyPressed;
         }
 
         private void OnKeyPressed(object sender, KeyboardHookEvent e)
