@@ -1,8 +1,5 @@
 ﻿using Placehold.Keyboard.Key;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 
 namespace Placehold.Keyboard.Hook
 {
@@ -16,7 +13,7 @@ namespace Placehold.Keyboard.Hook
         {
             this.KeyboardData = keyboardData;
             this.KeyboardState = keyboardState;
-            this.KeyIn = new KeyIn((KeyCode) keyboardData.VirtualCode, keyboardData.Shifted, keyboardData.Capped);
+            this.KeyIn = new KeyIn((KeyCode)keyboardData.VirtualCode, keyboardData.Shifted, keyboardData.Capped);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace Placehold.Keyboard.Key
         {
             return (int)KeyCode > 64 && (int)KeyCode < 91;
         }
-        
+
         Dictionary<KeyCode, string> KeyCodes = new Dictionary<KeyCode, string>
         {
             { KeyCode.F1, "<F1>" },

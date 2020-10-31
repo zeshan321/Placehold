@@ -3,7 +3,6 @@ using Placehold.Keyboard.Key;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 
 namespace Placehold.Keyboard
@@ -11,7 +10,7 @@ namespace Placehold.Keyboard
     public class KeyboardManager : IDisposable
     {
         private readonly KeyboardHook keyboardHook;
-        
+
         private const char symbol = '$'; // only start listening once this symbol is typed and stop once typed again
         private DateTimeOffset? capture; // when not null, typed values will be stored in captured array
         private TimeSpan timeout = new TimeSpan(0, 0, 30); // Cancel listening if final symbol key wasn't pressed within given timespan
@@ -36,14 +35,14 @@ namespace Placehold.Keyboard
                 return;
             }
 
-            if (!capture.HasValue) 
+            if (!capture.HasValue)
             {
                 if (character == symbol)
                 {
                     capture = DateTimeOffset.UtcNow;
                     capturedKeys.Add(value);
                 }
-            } 
+            }
             else
             {
                 capturedKeys.Add(value);
@@ -73,7 +72,7 @@ namespace Placehold.Keyboard
 
             foreach (var c in output)
             {
-                KeyboardHook.PostMessage(window, (uint) KeyboardState.WmChar, (IntPtr)c, IntPtr.Zero);
+                KeyboardHook.PostMessage(window, (uint)KeyboardState.WmChar, (IntPtr)c, IntPtr.Zero);
             }
         }
 
@@ -83,7 +82,7 @@ namespace Placehold.Keyboard
 
             for (var i = 0; i < amount; i++)
             {
-                KeyboardHook.PostMessage(window, (uint)KeyboardState.KeyDown, (int) KeyCode.Back, 0);
+                KeyboardHook.PostMessage(window, (uint)KeyboardState.KeyDown, (int)KeyCode.Back, 0);
                 KeyboardHook.PostMessage(window, (uint)KeyboardState.KeyUp, (int)KeyCode.Back, 0);
             }
         }

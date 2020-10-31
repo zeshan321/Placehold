@@ -1,19 +1,9 @@
 ﻿using Placehold.Keyboard;
-using Placehold.Keyboard.Hook;
+using Placehold.Resources;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Windows.Forms;
 
 namespace Placehold
 {
@@ -23,17 +13,42 @@ namespace Placehold
     public partial class MainWindow : Window, IDisposable
     {
         private readonly KeyboardManager keyboardManager;
+        private readonly NotifyIcon notifyIcon;
 
         public MainWindow()
         {
+            // Init and display icon
+            notifyIcon = new NotifyIcon();
+            notifyIcon.Icon = Resource.favicon;
+            notifyIcon.Visible = true;
+
+            // Start keyboard manager
             keyboardManager = new KeyboardManager();
 
+            // Init and hide component
             InitializeComponent();
+            this.Hide();
         }
 
         public void Dispose()
         {
             keyboardManager.Dispose();
+        }
+
+        protected override void OnStateChanged(EventArgs e)
+        {
+            if (WindowState == WindowState.Minimized) this.Hide();
+
+            base.OnStateChanged(e);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            e.Cancel = true;
+
+            this.Hide();
+
+            base.OnClosing(e);
         }
     }
 }

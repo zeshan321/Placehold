@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Placehold.Keyboard
+﻿namespace Placehold.Keyboard
 {
     public enum KeyboardState
     {
