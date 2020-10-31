@@ -53,12 +53,13 @@ namespace Placehold.Keyboard
                     new Thread(() =>
                     {
                         Earse(input.Length);
+                        Thread.Sleep(100);
                         WriteString();
                     }).Start();
                 }
 
 
-                if (timeout.CompareTo(DateTimeOffset.UtcNow - capture.Value) < 0 || character == symbol)
+                if ((DateTimeOffset.UtcNow - capture.Value).TotalSeconds >= timeout.TotalSeconds || character == symbol)
                 {
                     capture = null;
                     capturedKeys.Clear();
@@ -76,7 +77,7 @@ namespace Placehold.Keyboard
             }
         }
 
-        private void Earse(int amount, int delay = 150)
+        private void Earse(int amount)
         {
             var window = GetCorrectWindow();
 
