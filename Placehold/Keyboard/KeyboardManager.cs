@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Threading;
+using System.Windows;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Placehold.Keyboard
 {
@@ -13,6 +16,7 @@ namespace Placehold.Keyboard
     {
         private readonly TemplateManager templateManager;
         private readonly KeyboardHook keyboardHook;
+        public static event EventHandler<TemplateTriggerHookEvent> templateTriggerHook;
 
         private readonly char symbol; // only start listening once this symbol is typed and stop once typed again
         private readonly TimeSpan timeout; // Cancel listening if final symbol key wasn't pressed within given timespan
@@ -56,11 +60,15 @@ namespace Placehold.Keyboard
                 var template = templateManager.GetTemplateByCaptured(capturedString);
                 if (template.HasValue)
                 {
+                    var window = GetCorrectWindow();
+
                     new Thread(() =>
                     {
                         Earse(template.Value.Key.Length);
                         Thread.Sleep(100);
-                        WriteString(template.Value.Value);
+
+                        TemplateTriggerHookEvent templateTriggerHookEvent = new TemplateTriggerHookEvent(template.Value.Key, template.Value.Value, window);
+                        templateTriggerHook?.Invoke(this, templateTriggerHookEvent);
                     }).Start();
                 }
 
@@ -70,16 +78,6 @@ namespace Placehold.Keyboard
                     capture = null;
                     capturedKeys.Clear();
                 }
-            }
-        }
-
-        private void WriteString(string output)
-        {
-            var window = GetCorrectWindow();
-
-            foreach (var c in output)
-            {
-                KeyboardHook.PostMessage(window, (uint)KeyboardState.WmChar, (IntPtr)c, IntPtr.Zero);
             }
         }
 

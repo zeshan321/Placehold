@@ -41,7 +41,7 @@ namespace Placehold
         private void MenuExit(object sender, EventArgs e)
         {
             Dispose();
-            Environment.Exit(0);
+            this.Close();
         }
 
         public void Dispose()
@@ -54,15 +54,6 @@ namespace Placehold
             if (WindowState == WindowState.Minimized) this.Hide();
 
             base.OnStateChanged(e);
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            e.Cancel = true;
-
-            this.Hide();
-
-            base.OnClosing(e);
         }
     }
 }
