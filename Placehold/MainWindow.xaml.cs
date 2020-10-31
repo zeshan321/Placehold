@@ -1,9 +1,11 @@
 ﻿using Placehold.Keyboard;
 using Placehold.Resources;
+using Placehold.Template;
 using System;
 using System.ComponentModel;
 using System.Configuration;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Forms;
 
 namespace Placehold
@@ -15,13 +17,18 @@ namespace Placehold
     {
         private readonly KeyboardManager keyboardManager;
         private readonly NotifyIcon notifyIcon;
+        private readonly ContextMenuStrip contextMenuStrip;
 
         public MainWindow()
         {
-            // Init and display icon
+            // Init tray
+            contextMenuStrip = new ContextMenuStrip();
+            contextMenuStrip.Items.Add("Exit", null, this.MenuExit);
+
             notifyIcon = new NotifyIcon();
             notifyIcon.Icon = Resource.favicon;
             notifyIcon.Visible = true;
+            notifyIcon.ContextMenuStrip = contextMenuStrip;
 
             // Start keyboard manager
             keyboardManager = new KeyboardManager();
@@ -29,6 +36,12 @@ namespace Placehold
             // Init and hide component
             InitializeComponent();
             this.Hide();
+        }
+
+        private void MenuExit(object sender, EventArgs e)
+        {
+            Dispose();
+            Environment.Exit(0);
         }
 
         public void Dispose()
