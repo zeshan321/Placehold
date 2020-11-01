@@ -23,13 +23,13 @@ namespace Placehold.Keyboard
         private DateTimeOffset? capture; // when not null, typed values will be stored in captured array
         private List<string> capturedKeys = new List<string>();
 
-        public KeyboardManager()
+        public KeyboardManager(TemplateManager templateManager)
         {
             this.symbol = char.Parse(ConfigurationManager.AppSettings["symbol"]);
             this.timeout = TimeSpan.Parse(ConfigurationManager.AppSettings["timeout"]);
 
 
-            this.templateManager = new TemplateManager();
+            this.templateManager = templateManager;
             this.keyboardHook = new KeyboardHook();
             this.keyboardHook.KeyboardPressed += OnKeyPressed;
         }
@@ -62,14 +62,11 @@ namespace Placehold.Keyboard
                 {
                     var window = GetCorrectWindow();
 
-                    new Thread(() =>
-                    {
-                        Earse(template.Value.Key.Length);
-                        Thread.Sleep(100);
+                    Thread.Sleep(300);
+                    Earse(template.Value.Key.Length);
 
-                        TemplateTriggerHookEvent templateTriggerHookEvent = new TemplateTriggerHookEvent(template.Value.Key, template.Value.Value, window);
-                        templateTriggerHook?.Invoke(this, templateTriggerHookEvent);
-                    }).Start();
+                    TemplateTriggerHookEvent templateTriggerHookEvent = new TemplateTriggerHookEvent(template.Value.Key, template.Value.Value, window);
+                    templateTriggerHook?.Invoke(this, templateTriggerHookEvent);
                 }
 
 
