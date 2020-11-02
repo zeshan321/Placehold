@@ -65,6 +65,13 @@ namespace Placehold.Keyboard
                 capturedKeys.Add(value);
                 var capturedString = string.Join("", capturedKeys);
                 Debug.WriteLine(capturedString);
+                if (capturedString == symbol.ToString() || capturedString == $"{symbol}{symbol}")
+                {
+                    capture = null;
+                    capturedKeys.Clear();
+                    return;
+                }
+
                 string? argumentString = null;
                 var eraseAmount = 0;
 
@@ -94,12 +101,6 @@ namespace Placehold.Keyboard
                 }
 
                 if (capture != null && (DateTimeOffset.UtcNow - capture.Value).TotalSeconds >= timeout.TotalSeconds)
-                {
-                    capture = null;
-                    capturedKeys.Clear();
-                }
-
-                if (capturedString.Count(c => c == symbol) >= 2)
                 {
                     capture = null;
                     capturedKeys.Clear();
