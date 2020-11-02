@@ -16,6 +16,7 @@ using IDataObject = System.Windows.IDataObject;
 using DataObject = System.Windows.DataObject;
 using static Placehold.Keyboard.Hook.KeyboardHook;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace Placehold.Template
 {
@@ -44,6 +45,7 @@ namespace Placehold.Template
             LoadTemplates();
             KeyboardManager.templateTriggerHook += OnTemplateTriggered;
         }
+        
 
         private void OnTemplateTriggered(object sender, TemplateTriggerHookEvent e)
         {
@@ -53,11 +55,12 @@ namespace Placehold.Template
             {
                 for (var i = 0; i < e.TemplateValue.Arguments.Count; i++)
                 {
-                    string argument = e.TemplateValue.Arguments.ElementAtOrDefault(i);
+                    var argument = e.TemplateValue.Arguments.ElementAtOrDefault(i);
+                    var value = e.Arguments.ElementAtOrDefault(i);
 
-                    if (argument != null && e.Arguments.Length > i)
+                    if (argument != null && value != null)
                     {
-                        template = template.Replace(argument, e.Arguments[i]);
+                        template = template.Replace(argument, value);
                         continue;
                     }
 
@@ -72,8 +75,10 @@ namespace Placehold.Template
                 var data = templateData.Data[key];
 
                 dataObject.SetData(key, data);
+                Debug.WriteLine(key);
             }
 
+            Clipboard.Clear();
             Clipboard.SetDataObject(dataObject);
             Paste();
         }
@@ -122,16 +127,9 @@ namespace Placehold.Template
             Input vKeyDown = new Input();
             vKeyDown.Type = 1;
             vKeyDown.Data.Keyboard.Vk = (ushort)KeyCode.V;
-            vKeyDown.Data.Keyboard.Flags = (int)KeyboardState.KeyDown;
+            vKeyDown.Data.Keyboard.Flags = 0;
             vKeyDown.Data.Keyboard.Scan = 0;
             keyList.Add(vKeyDown);
-
-            Input vKeyUp = new Input();
-            vKeyUp.Type = 1;
-            vKeyUp.Data.Keyboard.Vk = (ushort)KeyCode.V;
-            vKeyUp.Data.Keyboard.Flags = (int)KeyboardState.KeyUp;
-            vKeyUp.Data.Keyboard.Scan = 0;
-            keyList.Add(vKeyUp);
 
             Input controlKeyUp = new Input();
             controlKeyUp.Type = 1;

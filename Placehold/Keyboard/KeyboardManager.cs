@@ -44,6 +44,10 @@ namespace Placehold.Keyboard
             var value = e.KeyIn.ToString();
             if (!char.TryParse(value, out char character))
             {
+                if (value.Contains("backspace") && capturedKeys.Any())
+                {
+                    capturedKeys.RemoveAt(capturedKeys.Count - 1);
+                }
                 return;
             }
 
@@ -60,13 +64,7 @@ namespace Placehold.Keyboard
             {
                 capturedKeys.Add(value);
                 var capturedString = string.Join("", capturedKeys);
-                if (capturedString.EndsWith($"{character}{character}"))
-                {
-                    capture = null;
-                    capturedKeys.Clear();
-                    return;
-                }
-
+                Debug.WriteLine(capturedString);
                 string? argumentString = null;
                 var eraseAmount = 0;
 
@@ -92,9 +90,16 @@ namespace Placehold.Keyboard
 
                     capture = null;
                     capturedKeys.Clear();
+                    return;
                 }
 
                 if (capture != null && (DateTimeOffset.UtcNow - capture.Value).TotalSeconds >= timeout.TotalSeconds)
+                {
+                    capture = null;
+                    capturedKeys.Clear();
+                }
+
+                if (capturedString.Count(c => c == symbol) >= 2)
                 {
                     capture = null;
                     capturedKeys.Clear();
