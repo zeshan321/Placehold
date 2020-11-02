@@ -25,9 +25,14 @@ namespace Placehold
         private readonly NotifyIcon notifyIcon;
         private readonly ContextMenuStrip contextMenuStrip;
         private readonly string[] supportedDataFormats;
+        private readonly string path;
 
         public MainWindow()
         {
+            // Create template directory if not found
+            path = ConfigurationManager.AppSettings["templateDir"];
+            Directory.CreateDirectory(path);
+
             supportedDataFormats = new string[] { DataFormats.Html, DataFormats.Text, /*DataFormats.UnicodeText, DataFormats.CommaSeparatedValue, DataFormats.OemText, DataFormats.Serializable*/ };
 
             // Init tray
@@ -66,6 +71,7 @@ namespace Placehold
                 var serialize = JsonSerializer.Serialize(clipboardData, new JsonSerializerOptions() { MaxDepth = 100 });
                 var name = inputDialog.Answer;
                 var path = Path.Combine(ConfigurationManager.AppSettings["templateDir"], $"{name}.txt");
+
                 if (!File.Exists(path))
                 {
                     File.WriteAllText(path, serialize);
