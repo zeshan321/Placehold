@@ -1,16 +1,35 @@
-﻿using System;
+﻿using Placehold.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.Json;
-using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace Placehold.Template
 {
-    [Serializable]
     public class TemplateData
     {
-        public Dictionary<string, object> Data { get; set; }
+        public TemplateData(string data)
+        {
+            this.Data = data;
+            SearchForParams();
+        }
 
-        public TemplateData() { }
+        public string Data { get; set; }
+        public List<string> Arguments { get; set; }
+
+        private void SearchForParams()
+        {
+            this.Arguments = new List<string>();
+
+            var placeholders = Data.ExtractFromString();
+            foreach (var placeholder in placeholders)
+            {
+                var name = $"%{placeholder}%";
+                if (!Arguments.Contains(name))
+                {
+                    Arguments.Add(name);
+                }
+            }
+        }
     }
 }

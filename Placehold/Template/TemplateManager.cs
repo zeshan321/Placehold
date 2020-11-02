@@ -23,14 +23,14 @@ namespace Placehold.Template
     {
         private readonly string templateDir;
         private readonly string symbol;
-        private readonly Dictionary<string, string> templates;
+        private readonly Dictionary<string, TemplateData> templates;
         private readonly FileSystemWatcher fileSystemWatcher;
 
         public TemplateManager()
         {
             this.templateDir = ConfigurationManager.AppSettings["templateDir"];
             this.symbol = ConfigurationManager.AppSettings["symbol"];
-            this.templates = new Dictionary<string, string>();
+            this.templates = new Dictionary<string, TemplateData>();
 
             // Watch for dir changes
             this.fileSystemWatcher = new FileSystemWatcher();
@@ -47,8 +47,26 @@ namespace Placehold.Template
 
         private void OnTemplateTriggered(object sender, TemplateTriggerHookEvent e)
         {
+            // Add arguments to template
+            var template = e.TemplateValue.Data;
+            if (e.Arguments != null)
+            {
+                for (var i = 0; i < e.TemplateValue.Arguments.Count; i++)
+                {
+                    string argument = e.TemplateValue.Arguments.ElementAtOrDefault(i);
+
+                    if (argument != null && e.Arguments.Length > i)
+                    {
+                        template = template.Replace(argument, e.Arguments[i]);
+                        continue;
+                    }
+
+                    template = template.Replace(argument, "");
+                }
+            }
+
             IDataObject dataObject = new DataObject();
-            var templateData = JsonSerializer.Deserialize<TemplateData>(e.TemplateValue);
+            var templateData = JsonSerializer.Deserialize<ClipboardData>(template);
             foreach (var key in templateData.Data.Keys)
             {
                 var data = templateData.Data[key];
@@ -60,19 +78,19 @@ namespace Placehold.Template
             Paste();
         }
 
-        public string? GetTemplateByName(string name)
+        public TemplateData? GetTemplateByName(string name)
         {
-            KeyValuePair<string, string>? template = templates.FirstOrDefault(t => t.Key == name);
+            KeyValuePair<string, TemplateData>? template = templates.FirstOrDefault(t => t.Key == name);
             return template?.Value;
         }
 
-        public KeyValuePair<string, string>? GetTemplateByCaptured(string captured)
+        public KeyValuePair<string, TemplateData>? GetTemplateByCaptured(string captured)
         {
             foreach (var key in templates.Keys)
             {
                 if (captured.EndsWith(key))
                 {
-                    return new KeyValuePair<string, string>(key, templates.GetValueOrDefault(key));
+                    return new KeyValuePair<string, TemplateData>(key, templates.GetValueOrDefault(key));
                 }
             }
 
@@ -86,7 +104,7 @@ namespace Placehold.Template
             foreach (var filePath in Directory.GetFiles(templateDir, "*.txt", SearchOption.AllDirectories))
             {
                 var fileName = $"{symbol}{Path.GetFileNameWithoutExtension(filePath)}{symbol}";
-                templates.Add(fileName, File.ReadAllText(filePath));
+                templates.Add(fileName, new TemplateData(File.ReadAllText(filePath)));
             }
         }
 
@@ -104,14 +122,14 @@ namespace Placehold.Template
             Input vKeyDown = new Input();
             vKeyDown.Type = 1;
             vKeyDown.Data.Keyboard.Vk = (ushort)KeyCode.V;
-            vKeyDown.Data.Keyboard.Flags = 0;
+            vKeyDown.Data.Keyboard.Flags = (int)KeyboardState.KeyDown;
             vKeyDown.Data.Keyboard.Scan = 0;
             keyList.Add(vKeyDown);
 
             Input vKeyUp = new Input();
             vKeyUp.Type = 1;
             vKeyUp.Data.Keyboard.Vk = (ushort)KeyCode.V;
-            vKeyUp.Data.Keyboard.Flags = 0x0002;
+            vKeyUp.Data.Keyboard.Flags = (int)KeyboardState.KeyUp;
             vKeyUp.Data.Keyboard.Scan = 0;
             keyList.Add(vKeyUp);
 

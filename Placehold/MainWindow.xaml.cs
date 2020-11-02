@@ -28,7 +28,7 @@ namespace Placehold
 
         public MainWindow()
         {
-            supportedDataFormats = new string[] { DataFormats.Html, DataFormats.Text, DataFormats.UnicodeText, DataFormats.CommaSeparatedValue, DataFormats.OemText, DataFormats.Serializable };
+            supportedDataFormats = new string[] { DataFormats.Html, DataFormats.Text, /*DataFormats.UnicodeText, DataFormats.CommaSeparatedValue, DataFormats.OemText, DataFormats.Serializable*/ };
 
             // Init tray
             contextMenuStrip = new ContextMenuStrip();
@@ -51,19 +51,19 @@ namespace Placehold
 
         private void OnDoubleClick(object sender, EventArgs e)
         {
-            TemplateData templateData = new TemplateData();
-            templateData.Data = new Dictionary<string, object>();
+            ClipboardData clipboardData = new ClipboardData();
+            clipboardData.Data = new Dictionary<string, object>();
             foreach (var format in supportedDataFormats)
             {
                 if (Clipboard.ContainsData(format)) {
-                    templateData.Data.Add(format, Clipboard.GetData(format));
+                    clipboardData.Data.Add(format, Clipboard.GetData(format));
                 }
             }
 
             var inputDialog = new InputDialog("Enter placeholder name:");
             if (inputDialog.ShowDialog() == true)
             {
-                var serialize = JsonSerializer.Serialize(templateData, new JsonSerializerOptions() { MaxDepth = 100 });
+                var serialize = JsonSerializer.Serialize(clipboardData, new JsonSerializerOptions() { MaxDepth = 100 });
                 var name = inputDialog.Answer;
                 var path = Path.Combine(ConfigurationManager.AppSettings["templateDir"], $"{name}.txt");
                 if (!File.Exists(path))

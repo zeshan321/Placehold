@@ -9,6 +9,8 @@ using System.Threading;
 using System.Windows;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Placehold.Extensions;
+using System.Linq;
 
 namespace Placehold.Keyboard
 {
@@ -36,7 +38,7 @@ namespace Placehold.Keyboard
 
         private void OnKeyPressed(object sender, KeyboardHookEvent e)
         {
-            if (e.KeyboardState != KeyboardState.KeyDown)
+            if (e.KeyboardState != KeyboardState.KeyDown && e.KeyboardState != KeyboardState.SysKeyDown)
                 return;
 
             var value = e.KeyIn.ToString();
@@ -50,6 +52,7 @@ namespace Placehold.Keyboard
                 if (character == symbol)
                 {
                     capture = DateTimeOffset.UtcNow;
+                    capturedKeys.Clear();
                     capturedKeys.Add(value);
                 }
             }
@@ -57,20 +60,41 @@ namespace Placehold.Keyboard
             {
                 capturedKeys.Add(value);
                 var capturedString = string.Join("", capturedKeys);
+                if (capturedString.EndsWith($"{character}{character}"))
+                {
+                    capture = null;
+                    capturedKeys.Clear();
+                    return;
+                }
+
+                string? argumentString = null;
+                var eraseAmount = 0;
+
+                if (capturedString.Contains('(') && capturedString.Contains(')'))
+                {
+                    argumentString = capturedString.ExtractFromString("(", ")").FirstOrDefault() ?? "";
+                    capturedString = capturedString.Replace($"({argumentString})", "");
+                    eraseAmount += (2 + (argumentString?.Length ?? 0));
+                }
+
                 var template = templateManager.GetTemplateByCaptured(capturedString);
                 if (template.HasValue)
                 {
+                    eraseAmount += template.Value.Key.Length;
+
                     var window = GetCorrectWindow();
 
                     Thread.Sleep(300);
-                    Earse(template.Value.Key.Length);
+                    Earse(eraseAmount);
 
-                    TemplateTriggerHookEvent templateTriggerHookEvent = new TemplateTriggerHookEvent(template.Value.Key, template.Value.Value, window);
+                    TemplateTriggerHookEvent templateTriggerHookEvent = new TemplateTriggerHookEvent(template.Value.Key, template.Value.Value, window, argumentString?.Split("|"));
                     templateTriggerHook?.Invoke(this, templateTriggerHookEvent);
+
+                    capture = null;
+                    capturedKeys.Clear();
                 }
 
-
-                if ((DateTimeOffset.UtcNow - capture.Value).TotalSeconds >= timeout.TotalSeconds || character == symbol)
+                if (capture != null && (DateTimeOffset.UtcNow - capture.Value).TotalSeconds >= timeout.TotalSeconds)
                 {
                     capture = null;
                     capturedKeys.Clear();

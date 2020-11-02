@@ -32,6 +32,7 @@ namespace Placehold
 
         private void Window_ContentRendered(object sender, EventArgs e)
         {
+            this.Activate();
             txtAnswer.Focus();
         }
 
