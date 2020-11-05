@@ -11,6 +11,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Placehold.Extensions;
 using System.Linq;
+using System.IO;
+using System.Drawing;
+using System.Windows.Media.Imaging;
+using System.Collections.Specialized;
 
 namespace Placehold.Keyboard
 {
@@ -29,7 +33,6 @@ namespace Placehold.Keyboard
         {
             this.symbol = char.Parse(ConfigurationManager.AppSettings["symbol"]);
             this.timeout = TimeSpan.Parse(ConfigurationManager.AppSettings["timeout"]);
-
 
             this.templateManager = templateManager;
             this.keyboardHook = new KeyboardHook();
@@ -82,19 +85,11 @@ namespace Placehold.Keyboard
                     eraseAmount += (2 + (argumentString?.Length ?? 0));
                 }
 
-                var template = templateManager.GetTemplateByCaptured(capturedString);
-                if (template.HasValue)
+                TemplateTriggerHookEvent templateTriggerHookEvent = new TemplateTriggerHookEvent(capturedString, GetCorrectWindow(), argumentString?.Split("|"), eraseAmount);
+                templateTriggerHook?.Invoke(this, templateTriggerHookEvent);
+
+                if (templateTriggerHookEvent.Complete)
                 {
-                    eraseAmount += template.Value.Key.Length;
-
-                    var window = GetCorrectWindow();
-
-                    Thread.Sleep(300);
-                    Earse(eraseAmount);
-
-                    TemplateTriggerHookEvent templateTriggerHookEvent = new TemplateTriggerHookEvent(template.Value.Key, template.Value.Value, window, argumentString?.Split("|"));
-                    templateTriggerHook?.Invoke(this, templateTriggerHookEvent);
-
                     capture = null;
                     capturedKeys.Clear();
                     return;
@@ -105,17 +100,6 @@ namespace Placehold.Keyboard
                     capture = null;
                     capturedKeys.Clear();
                 }
-            }
-        }
-
-        private void Earse(int amount)
-        {
-            var window = GetCorrectWindow();
-
-            for (var i = 0; i < amount; i++)
-            {
-                KeyboardHook.PostMessage(window, (uint)KeyboardState.KeyDown, (int)KeyCode.Back, 0);
-                KeyboardHook.PostMessage(window, (uint)KeyboardState.KeyUp, (int)KeyCode.Back, 0);
             }
         }
 

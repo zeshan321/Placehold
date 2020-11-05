@@ -1,6 +1,7 @@
 ﻿using Placehold.Keyboard;
 using Placehold.Resources;
 using Placehold.Template;
+using Placehold.Template.Data;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -32,6 +33,7 @@ namespace Placehold
             // Create template directory if not found
             path = ConfigurationManager.AppSettings["templateDir"];
             Directory.CreateDirectory(path);
+            Directory.CreateDirectory(ConfigurationManager.AppSettings["filesDir"]);
 
             supportedDataFormats = new string[] { DataFormats.Html, DataFormats.Text, /*DataFormats.UnicodeText, DataFormats.CommaSeparatedValue, DataFormats.OemText, DataFormats.Serializable*/ };
 

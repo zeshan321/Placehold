@@ -8,17 +8,18 @@ namespace Placehold.Keyboard.Hook
 {
     public class TemplateTriggerHookEvent : HandledEventArgs
     {
-        public TemplateTriggerHookEvent(string templateKey, TemplateData templateValue, int windowId, string[] arguments)
+        public TemplateTriggerHookEvent(string capturedString, int windowId, string[] arguments, int earseAmount)
         {
-            TemplateKey = templateKey;
-            TemplateValue = templateValue;
+            CapturedString = capturedString;
             WindowId = windowId;
             Arguments = arguments;
+            EarseAmount = earseAmount;
         }
 
-        public string TemplateKey { get; set; }
-        public TemplateData TemplateValue { get; set; }
+        public string CapturedString { get; set; }
         public int WindowId { get; set; }
         public string[] Arguments { get; set; }
+        public int EarseAmount { get; set; }
+        public bool Complete { get; set; }
     }
 }

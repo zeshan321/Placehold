@@ -6,32 +6,33 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading;
-using System.Windows;
-using System.Windows.Forms;
-using Clipboard = System.Windows.Clipboard;
-using IDataObject = System.Windows.IDataObject;
-using DataObject = System.Windows.DataObject;
-using static Placehold.Keyboard.Hook.KeyboardHook;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
+using Placehold.Template.Events;
+using Placehold.Template.Data;
+using static Placehold.Keyboard.Hook.KeyboardHook;
 
 namespace Placehold.Template
 {
     public class TemplateManager : IDisposable
     {
         private readonly string templateDir;
+        private readonly string fileseDir;
         private readonly string symbol;
         private readonly Dictionary<string, TemplateData> templates;
+        private readonly Dictionary<string, string> files;
         private readonly FileSystemWatcher fileSystemWatcher;
+
+        // Events
+        private readonly TemplateEvent templateEvent;
+        private readonly FileEvent fileEvent;
 
         public TemplateManager()
         {
             this.templateDir = ConfigurationManager.AppSettings["templateDir"];
+            this.fileseDir = ConfigurationManager.AppSettings["filesDir"];
             this.symbol = ConfigurationManager.AppSettings["symbol"];
             this.templates = new Dictionary<string, TemplateData>();
+            this.files = new Dictionary<string, string>();
 
             // Watch for dir changes
             this.fileSystemWatcher = new FileSystemWatcher();
@@ -40,47 +41,18 @@ namespace Placehold.Template
             this.fileSystemWatcher.Filter = "*.*";
             this.fileSystemWatcher.Changed += OnChanged;
             this.fileSystemWatcher.EnableRaisingEvents = true;
+            this.fileSystemWatcher.IncludeSubdirectories = true;
 
-            // Load templates and listen for when triggered
+            // Load templates
             LoadTemplates();
-            KeyboardManager.templateTriggerHook += OnTemplateTriggered;
-        }
-        
+            LoadFiles();
 
-        private void OnTemplateTriggered(object sender, TemplateTriggerHookEvent e)
-        {
-            // Add arguments to template
-            var template = e.TemplateValue.Data;
-            if (e.Arguments != null)
-            {
-                for (var i = 0; i < e.TemplateValue.Arguments.Count; i++)
-                {
-                    var argument = e.TemplateValue.Arguments.ElementAtOrDefault(i);
-                    var value = e.Arguments.ElementAtOrDefault(i);
+            // Register events
+            this.templateEvent = new TemplateEvent(this);
+            KeyboardManager.templateTriggerHook += this.templateEvent.OnCaptured;
 
-                    if (argument != null && value != null)
-                    {
-                        template = template.Replace(argument, value);
-                        continue;
-                    }
-
-                    template = template.Replace(argument, "");
-                }
-            }
-
-            IDataObject dataObject = new DataObject();
-            var templateData = JsonSerializer.Deserialize<ClipboardData>(template);
-            foreach (var key in templateData.Data.Keys)
-            {
-                var data = templateData.Data[key];
-
-                dataObject.SetData(key, data);
-                Debug.WriteLine(key);
-            }
-
-            Clipboard.Clear();
-            Clipboard.SetDataObject(dataObject);
-            Paste();
+            this.fileEvent = new FileEvent(this);
+            KeyboardManager.templateTriggerHook += this.fileEvent.OnCaptured;
         }
 
         public TemplateData? GetTemplateByName(string name)
@@ -89,17 +61,28 @@ namespace Placehold.Template
             return template?.Value;
         }
 
-        public KeyValuePair<string, TemplateData>? GetTemplateByCaptured(string captured)
+        public TemplateData? GetTemplateByCaptured(string captured)
         {
             foreach (var key in templates.Keys)
             {
                 if (captured.EndsWith(key))
                 {
-                    return new KeyValuePair<string, TemplateData>(key, templates.GetValueOrDefault(key));
+                    return templates[key];
                 }
             }
 
             return null;
+        }
+
+        public FileData? GetFile(string name)
+        {
+            var key = files.Keys.FirstOrDefault(t => t.EndsWith(name));
+            if (key == null)
+            {
+                return null;
+            }
+
+            return new FileData(key, files[key]);
         }
 
         private void LoadTemplates()
@@ -109,11 +92,22 @@ namespace Placehold.Template
             foreach (var filePath in Directory.GetFiles(templateDir, "*.txt", SearchOption.AllDirectories))
             {
                 var fileName = $"{symbol}{Path.GetFileNameWithoutExtension(filePath)}{symbol}";
-                templates.Add(fileName, new TemplateData(File.ReadAllText(filePath)));
+                templates.Add(fileName, new TemplateData(fileName, File.ReadAllText(filePath)));
             }
         }
 
-        private void Paste()
+        private void LoadFiles()
+        {
+            files.Clear();
+
+            foreach (var filePath in Directory.GetFiles(fileseDir, "*.*", SearchOption.AllDirectories))
+            {
+                var fileName = $"{symbol}{Path.GetFileNameWithoutExtension(filePath)}{symbol}";
+                files.Add(fileName, filePath);
+            }
+        }
+
+        public void Paste()
         {
             List<Input> keyList = new List<Input>();
 
@@ -141,14 +135,25 @@ namespace Placehold.Template
             KeyboardHook.SendInput((uint)keyList.Count, keyList.ToArray(), Marshal.SizeOf(typeof(Input)));
         }
 
+        public void Earse(int window, int amount)
+        {
+            for (var i = 0; i < amount; i++)
+            {
+                KeyboardHook.PostMessage(window, (uint)KeyboardState.KeyDown, (int)KeyCode.Back, 0);
+                KeyboardHook.PostMessage(window, (uint)KeyboardState.KeyUp, (int)KeyCode.Back, 0);
+            }
+        }
+
         private void OnChanged(object source, FileSystemEventArgs e)
         {
             LoadTemplates();
+            LoadFiles();
         }
 
         public void Dispose()
         {
-            KeyboardManager.templateTriggerHook -= OnTemplateTriggered;
+            KeyboardManager.templateTriggerHook -= this.templateEvent.OnCaptured;
+            KeyboardManager.templateTriggerHook -= this.fileEvent.OnCaptured;
             fileSystemWatcher.Changed -= OnChanged;
             fileSystemWatcher.Dispose();
         }

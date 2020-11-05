@@ -4,16 +4,18 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Placehold.Template
+namespace Placehold.Template.Data
 {
     public class TemplateData
     {
-        public TemplateData(string data)
+        public TemplateData(string name, string data)
         {
+            this.Name = name;
             this.Data = data;
             SearchForParams();
         }
 
+        public string Name { get; set; }
         public string Data { get; set; }
         public List<string> Arguments { get; set; }
 

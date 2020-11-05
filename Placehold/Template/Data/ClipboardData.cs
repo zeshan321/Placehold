@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Windows;
 
-namespace Placehold.Template
+namespace Placehold.Template.Data
 {
     [Serializable]
     public class ClipboardData
