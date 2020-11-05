@@ -12,7 +12,7 @@ namespace Placehold.Template.Events
     {
         private readonly TemplateManager templateManager;
 
-        public TemplateEvent(TemplateManager templateManager) : base(templateManager) 
+        public TemplateEvent(TemplateManager templateManager) : base(templateManager)
         {
             this.templateManager = templateManager;
         }

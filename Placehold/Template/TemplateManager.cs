@@ -1,14 +1,14 @@
 ﻿using Placehold.Keyboard;
 using Placehold.Keyboard.Hook;
 using Placehold.Keyboard.Key;
+using Placehold.Template.Data;
+using Placehold.Template.Events;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Placehold.Template.Events;
-using Placehold.Template.Data;
 using static Placehold.Keyboard.Hook.KeyboardHook;
 
 namespace Placehold.Template

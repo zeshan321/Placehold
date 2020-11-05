@@ -1,12 +1,9 @@
 ﻿using Placehold.Keyboard.Hook;
 using Placehold.Template.Events.Base;
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -18,7 +15,7 @@ namespace Placehold.Template.Events
         private readonly TemplateManager templateManager;
         private readonly string[] imageFiles = { "jpg", "bmp", "gif", "png" };
 
-        public FileEvent(TemplateManager templateManager) : base(templateManager) 
+        public FileEvent(TemplateManager templateManager) : base(templateManager)
         {
             this.templateManager = templateManager;
         }

@@ -1,7 +1,4 @@
 ﻿using Placehold.Keyboard.Hook;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Placehold.Template.Events.Base
 {
@@ -9,7 +6,7 @@ namespace Placehold.Template.Events.Base
     {
         private readonly TemplateManager templateManager;
 
-        public BaseEvent(TemplateManager templateManager) 
+        public BaseEvent(TemplateManager templateManager)
         {
             this.templateManager = templateManager;
         }

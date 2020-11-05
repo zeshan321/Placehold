@@ -4,12 +4,10 @@ using Placehold.Template;
 using Placehold.Template.Data;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Forms;
 using Clipboard = System.Windows.Clipboard;
 using DataFormats = System.Windows.DataFormats;
@@ -62,7 +60,8 @@ namespace Placehold
             clipboardData.Data = new Dictionary<string, object>();
             foreach (var format in supportedDataFormats)
             {
-                if (Clipboard.ContainsData(format)) {
+                if (Clipboard.ContainsData(format))
+                {
                     clipboardData.Data.Add(format, Clipboard.GetData(format));
                 }
             }

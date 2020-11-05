@@ -1,20 +1,11 @@
-﻿using Placehold.Keyboard.Hook;
-using Placehold.Keyboard.Key;
+﻿using Placehold.Extensions;
+using Placehold.Keyboard.Hook;
 using Placehold.Template;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.Threading;
-using System.Windows;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Placehold.Extensions;
 using System.Linq;
-using System.IO;
-using System.Drawing;
-using System.Windows.Media.Imaging;
-using System.Collections.Specialized;
 
 namespace Placehold.Keyboard
 {
