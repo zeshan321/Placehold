@@ -58,7 +58,6 @@ namespace Placehold.Keyboard
             {
                 capturedKeys.Add(value);
                 var capturedString = string.Join("", capturedKeys);
-                Debug.WriteLine(capturedString);
                 if (capturedString == symbol.ToString() || capturedString == $"{symbol}{symbol}")
                 {
                     capture = null;

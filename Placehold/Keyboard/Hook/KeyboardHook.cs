@@ -99,13 +99,17 @@ namespace Placehold.Keyboard.Hook
                 if (GetKeyState(KeyCode.Capital) == 1)
                     p.Capped = true;
 
+                var key = new KeyIn((KeyCode)p.VirtualCode, p.Shifted, p.Capped);
 
-                var eventArguments = new KeyboardHookEvent(p, (KeyboardState)wparamTyped);
+                if (!key.ToString().Equals("<shift>"))
+                {
+                    var eventArguments = new KeyboardHookEvent(p, (KeyboardState)wparamTyped);
 
-                EventHandler<KeyboardHookEvent> handler = KeyboardPressed;
-                handler?.Invoke(this, eventArguments);
+                    EventHandler<KeyboardHookEvent> handler = KeyboardPressed;
+                    handler?.Invoke(this, eventArguments);
 
-                fEatKeyStroke = eventArguments.Handled;
+                    fEatKeyStroke = eventArguments.Handled;
+                }
             }
 
             return fEatKeyStroke ? (IntPtr)1 : CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
