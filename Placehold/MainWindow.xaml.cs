@@ -19,8 +19,8 @@ namespace Placehold
     /// </summary>
     public partial class MainWindow : Window, IDisposable
     {
-        private readonly TemplateManager templateManager;
-        private readonly KeyboardManager keyboardManager;
+        private TemplateManager templateManager;
+        private KeyboardManager keyboardManager;
         private readonly NotifyIcon notifyIcon;
         private readonly ContextMenuStrip contextMenuStrip;
         private readonly string[] supportedDataFormats;
@@ -32,11 +32,13 @@ namespace Placehold
             path = ConfigurationManager.AppSettings["templateDir"];
             Directory.CreateDirectory(path);
             Directory.CreateDirectory(ConfigurationManager.AppSettings["filesDir"]);
+            Directory.CreateDirectory(ConfigurationManager.AppSettings["pluginDir"]);
 
             supportedDataFormats = new string[] { DataFormats.Html, DataFormats.Text, /*DataFormats.UnicodeText, DataFormats.CommaSeparatedValue, DataFormats.OemText, DataFormats.Serializable*/ };
 
             // Init tray
             contextMenuStrip = new ContextMenuStrip();
+            contextMenuStrip.Items.Add("Restart", null, this.Restart);
             contextMenuStrip.Items.Add("Exit", null, this.MenuExit);
 
             notifyIcon = new NotifyIcon();
@@ -84,6 +86,13 @@ namespace Placehold
         {
             Dispose();
             this.Close();
+        }
+
+        private void Restart(object sender, EventArgs e)
+        {
+            Dispose();
+            templateManager = new TemplateManager();
+            keyboardManager = new KeyboardManager(templateManager);
         }
 
         public void Dispose()
