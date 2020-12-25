@@ -53,7 +53,7 @@ namespace Placehold.Template
         {
             foreach (var key in templates.Keys)
             {
-                if (captured.EndsWith(key))
+                if (captured.Equals(key))
                 {
                     return templates[key];
                 }
@@ -64,7 +64,7 @@ namespace Placehold.Template
 
         public FileData? GetFile(string name)
         {
-            var key = files.Keys.FirstOrDefault(t => t.EndsWith(name));
+            var key = files.Keys.FirstOrDefault(t => t.Equals(name));
             if (key == null)
             {
                 return null;
