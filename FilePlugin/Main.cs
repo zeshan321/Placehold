@@ -1,16 +1,16 @@
 ﻿using Placehold.Keyboard.Hook;
 using Placehold.Plugin;
 using System;
+using System.Linq;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace Placehold.Template.Events
+namespace FilePlugin
 {
-    public class FileEvent : IPlaceholdEvent
+    public class Main : IPlaceholdEvent
     {
         private readonly string[] imageFiles = { "jpg", "bmp", "gif", "png" };
 

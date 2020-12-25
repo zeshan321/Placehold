@@ -2,7 +2,6 @@
 using Placehold.Keyboard.Hook;
 using Placehold.Keyboard.Key;
 using Placehold.Template.Data;
-using Placehold.Template.Events;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -22,9 +21,6 @@ namespace Placehold.Template
         private readonly Dictionary<string, string> files;
         private readonly FileSystemWatcher fileSystemWatcher;
 
-        // Events
-        private readonly FileEvent fileEvent;
-
         public TemplateManager()
         {
             this.templateDir = ConfigurationManager.AppSettings["templateDir"];
@@ -35,7 +31,7 @@ namespace Placehold.Template
 
             // Watch for dir changes
             this.fileSystemWatcher = new FileSystemWatcher();
-            this.fileSystemWatcher.Path = templateDir;
+            this.fileSystemWatcher.Path = ConfigurationManager.AppSettings["pluginDir"];
             this.fileSystemWatcher.NotifyFilter = NotifyFilters.LastWrite;
             this.fileSystemWatcher.Filter = "*.*";
             this.fileSystemWatcher.Changed += OnChanged;
@@ -45,9 +41,6 @@ namespace Placehold.Template
             // Load templates
             LoadTemplates();
             LoadFiles();
-
-            this.fileEvent = new FileEvent();
-            KeyboardManager.templateTriggerHook += this.fileEvent.OnCaptured;
         }
 
         public TemplateData? GetTemplateByName(string name)

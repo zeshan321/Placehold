@@ -25,15 +25,16 @@ namespace Placehold
         private readonly NotifyIcon notifyIcon;
         private readonly ContextMenuStrip contextMenuStrip;
         private readonly string[] supportedDataFormats;
-        private readonly string path;
+        private readonly string mainPath;
 
         public MainWindow()
         {
+            mainPath = ConfigurationManager.AppSettings["pluginDir"];
+
             // Create template directory if not found
-            path = ConfigurationManager.AppSettings["templateDir"];
-            Directory.CreateDirectory(path);
+            Directory.CreateDirectory(mainPath);
+            Directory.CreateDirectory(ConfigurationManager.AppSettings["templateDir"]);
             Directory.CreateDirectory(ConfigurationManager.AppSettings["filesDir"]);
-            Directory.CreateDirectory(ConfigurationManager.AppSettings["pluginDir"]);
 
             supportedDataFormats = new string[] { DataFormats.Html, DataFormats.Text, /*DataFormats.UnicodeText, DataFormats.CommaSeparatedValue, DataFormats.OemText, DataFormats.Serializable*/ };
 

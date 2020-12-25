@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "plugins", "plugins", "{67C3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemplatePlugin", "..\TemplatePlugin\TemplatePlugin.csproj", "{FA0199C6-812A-4B60-9DB2-DEA348C1F272}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FilePlugin", "..\FilePlugin\FilePlugin.csproj", "{0951D893-E76B-4A15-BADE-F7AFF9D5345A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +25,17 @@ Global
 		{FA0199C6-812A-4B60-9DB2-DEA348C1F272}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA0199C6-812A-4B60-9DB2-DEA348C1F272}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA0199C6-812A-4B60-9DB2-DEA348C1F272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0951D893-E76B-4A15-BADE-F7AFF9D5345A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0951D893-E76B-4A15-BADE-F7AFF9D5345A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0951D893-E76B-4A15-BADE-F7AFF9D5345A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0951D893-E76B-4A15-BADE-F7AFF9D5345A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FA0199C6-812A-4B60-9DB2-DEA348C1F272} = {67C3806B-F198-4618-82F2-C5A6115BC118}
+		{0951D893-E76B-4A15-BADE-F7AFF9D5345A} = {67C3806B-F198-4618-82F2-C5A6115BC118}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {890AD7F5-F1C7-4DD6-8834-9720E9D894CC}
