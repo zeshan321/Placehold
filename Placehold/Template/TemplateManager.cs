@@ -17,8 +17,8 @@ namespace Placehold.Template
         private readonly string templateDir;
         private readonly string fileseDir;
         private readonly string symbol;
-        private readonly Dictionary<string, TemplateData> templates;
-        private readonly Dictionary<string, string> files;
+        public readonly Dictionary<string, TemplateData> templates;
+        public readonly Dictionary<string, string> files;
         private readonly FileSystemWatcher fileSystemWatcher;
 
         public TemplateManager()
