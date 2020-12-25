@@ -1,5 +1,5 @@
 ﻿using Placehold.Keyboard.Hook;
-using Placehold.Template.Events.Base;
+using Placehold.Plugin;
 using System;
 using System.Collections.Specialized;
 using System.IO;
@@ -10,24 +10,18 @@ using System.Windows.Media.Imaging;
 
 namespace Placehold.Template.Events
 {
-    public class FileEvent : BaseEvent
+    public class FileEvent : IPlaceholdEvent
     {
-        private readonly TemplateManager templateManager;
         private readonly string[] imageFiles = { "jpg", "bmp", "gif", "png" };
 
-        public FileEvent(TemplateManager templateManager) : base(templateManager)
-        {
-            this.templateManager = templateManager;
-        }
-
-        public override void OnCaptured(object sender, TemplateTriggerHookEvent e)
+        public void OnCaptured(object sender, TemplateTriggerHookEvent e)
         {
             if (e.Complete)
             {
                 return;
             }
 
-            var file = templateManager.GetFile(e.CapturedString);
+            var file = e.TemplateManager.GetFile(e.CapturedString);
             if (file == null)
             {
                 e.Complete = false;
@@ -37,7 +31,7 @@ namespace Placehold.Template.Events
             e.EarseAmount += file.Name.Length;
 
             Thread.Sleep(300);
-            templateManager.Earse(e.WindowId, e.EarseAmount);
+            e.TemplateManager.Earse(e.WindowId, e.EarseAmount);
 
             var fileName = Path.GetFileName(file.Path);
             var fileInfo = new FileInfo(file.Path);
@@ -54,9 +48,8 @@ namespace Placehold.Template.Events
                 Clipboard.SetFileDropList(fileCollection);
             }
 
-            templateManager.Paste();
-
-            base.OnCaptured(sender, e);
+            e.TemplateManager.Paste();
+            e.Complete = true;
         }
     }
 }

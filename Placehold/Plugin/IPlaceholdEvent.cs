@@ -1,8 +1,8 @@
 ﻿using Placehold.Keyboard.Hook;
 
-namespace Placehold.Template.Events.Base
+namespace Placehold.Plugin
 {
-    public interface IBaseEvent
+    public interface IPlaceholdEvent
     {
         void OnCaptured(object sender, TemplateTriggerHookEvent e);
     }

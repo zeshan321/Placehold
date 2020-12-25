@@ -23,7 +23,6 @@ namespace Placehold.Template
         private readonly FileSystemWatcher fileSystemWatcher;
 
         // Events
-        private readonly TemplateEvent templateEvent;
         private readonly FileEvent fileEvent;
 
         public TemplateManager()
@@ -47,11 +46,7 @@ namespace Placehold.Template
             LoadTemplates();
             LoadFiles();
 
-            // Register events
-            this.templateEvent = new TemplateEvent(this);
-            KeyboardManager.templateTriggerHook += this.templateEvent.OnCaptured;
-
-            this.fileEvent = new FileEvent(this);
+            this.fileEvent = new FileEvent();
             KeyboardManager.templateTriggerHook += this.fileEvent.OnCaptured;
         }
 
@@ -152,8 +147,6 @@ namespace Placehold.Template
 
         public void Dispose()
         {
-            KeyboardManager.templateTriggerHook -= this.templateEvent.OnCaptured;
-            KeyboardManager.templateTriggerHook -= this.fileEvent.OnCaptured;
             fileSystemWatcher.Changed -= OnChanged;
             fileSystemWatcher.Dispose();
         }

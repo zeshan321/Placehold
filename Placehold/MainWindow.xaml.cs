@@ -1,4 +1,5 @@
 ﻿using Placehold.Keyboard;
+using Placehold.Plugin;
 using Placehold.Resources;
 using Placehold.Template;
 using Placehold.Template.Data;
@@ -50,6 +51,7 @@ namespace Placehold
             // Start keyboard manager
             templateManager = new TemplateManager();
             keyboardManager = new KeyboardManager(templateManager);
+            new PluginManager().InitPlugins();
 
             // Init and hide component
             InitializeComponent();
@@ -93,6 +95,7 @@ namespace Placehold
             Dispose();
             templateManager = new TemplateManager();
             keyboardManager = new KeyboardManager(templateManager);
+            new PluginManager().InitPlugins();
         }
 
         public void Dispose()

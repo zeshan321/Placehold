@@ -75,7 +75,7 @@ namespace Placehold.Keyboard
                     eraseAmount += (2 + (argumentString?.Length ?? 0));
                 }
 
-                TemplateTriggerHookEvent templateTriggerHookEvent = new TemplateTriggerHookEvent(capturedString, GetCorrectWindow(), argumentString?.Split("|"), eraseAmount);
+                TemplateTriggerHookEvent templateTriggerHookEvent = new TemplateTriggerHookEvent(templateManager, capturedString, GetCorrectWindow(), argumentString?.Split("|"), eraseAmount);
                 templateTriggerHook?.Invoke(this, templateTriggerHookEvent);
 
                 if (templateTriggerHookEvent.Complete)

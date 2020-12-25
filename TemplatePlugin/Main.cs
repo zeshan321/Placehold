@@ -1,30 +1,24 @@
 ﻿using Placehold.Keyboard.Hook;
+using Placehold.Plugin;
 using Placehold.Template.Data;
-using Placehold.Template.Events.Base;
+using System;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Windows;
 
-namespace Placehold.Template.Events
+namespace TemplatePlugin
 {
-    public class TemplateEvent : BaseEvent
+    public class Main : IPlaceholdEvent
     {
-        private readonly TemplateManager templateManager;
-
-        public TemplateEvent(TemplateManager templateManager) : base(templateManager)
-        {
-            this.templateManager = templateManager;
-        }
-
-        public override void OnCaptured(object sender, TemplateTriggerHookEvent e)
+        public void OnCaptured(object sender, TemplateTriggerHookEvent e)
         {
             if (e.Complete)
             {
                 return;
             }
 
-            var template = templateManager.GetTemplateByCaptured(e.CapturedString);
+            var template = e.TemplateManager.GetTemplateByCaptured(e.CapturedString);
             if (template == null)
             {
                 e.Complete = false;
@@ -34,7 +28,7 @@ namespace Placehold.Template.Events
             e.EarseAmount += template.Name.Length;
 
             Thread.Sleep(300);
-            templateManager.Earse(e.WindowId, e.EarseAmount);
+            e.TemplateManager.Earse(e.WindowId, e.EarseAmount);
 
             var data = template.Data;
 
@@ -67,9 +61,8 @@ namespace Placehold.Template.Events
 
             Clipboard.Clear();
             Clipboard.SetDataObject(dataObject);
-            templateManager.Paste();
-
-            base.OnCaptured(sender, e);
+            e.TemplateManager.Paste();
+            e.Complete = true;
         }
     }
 }
